@@ -11,12 +11,14 @@ const User = mongoose.model("users");
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
-passport.deserializeUser((id, done) => {
-  User.findById(id)
-    .then(user => {
-      done(null, user);
-    })
-    .catch(err => console.log('deserialize: ',err));
+passport.deserializeUser(async (id, done) => {
+  const user = await User.findById(id);
+  await done(null, user);
+  // User.findById(id)
+  //   .then(user => {
+  //     done(null, user);
+  //   })
+  //   .catch(err => console.log('deserialize: ',err));
 });
 
 passport.use(
@@ -25,21 +27,31 @@ passport.use(
       clientID: keys.googleClientID,
       clientSecret: keys.googleClientSecret,
       callbackURL: "/auth/google/callback",
-      proxy:true
+      proxy: true
     },
-    (accessToken, refreshToken, profile, done) => {
+    async (accessToken, refreshToken, profile, done) => {
       // console.log('profile:',profile)
-      User.findOne({ googleId: profile.id })
-        .then(existingUser => {
-          if (existingUser) {
-            done(null, existingUser);
-          } else {
-            return new User({ googleId: profile.id })
-              .save()
-              .then(user => done(null, user));
-          }
-        })
-        .catch(err => console.log('err find one',err));
+      const user = await User.findOne({ googleId: profile.id });
+      if (user) {
+        done(null, user);
+      } else {
+        const newUser = await new User({ googleId: profile.id }).save();
+        done(null,newUser);
+      }
     }
+    // (accessToken, refreshToken, profile, done) => {
+    //   // console.log('profile:',profile)
+    //   User.findOne({ googleId: profile.id })
+    //     .then(existingUser => {
+    //       if (existingUser) {
+    //         done(null, existingUser);
+    //       } else {
+    //         return new User({ googleId: profile.id })
+    //           .save()
+    //           .then(user => done(null, user));
+    //       }
+    //     })
+    //     .catch(err => console.log('err find one',err));
+    // }
   )
 );
