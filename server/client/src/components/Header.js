@@ -5,7 +5,7 @@ export class Header extends Component {
         return (
             <nav>
             <div className="nav-wrapper">
-              <a href="#" class="left brand-logo">Emaily</a>
+              <a href="#" className="left brand-logo">Emaily</a>
               <ul  className="right">
                 <li><a href="#">Login With Google</a></li>
                 

@@ -1,11 +1,13 @@
+import { FETCH_USER } from "../actions/types";
 
-const initialState={}
-
-const authReducer = (state=initialState,action) => {
-  switch(action.type){
-      default:
-          return state;
+const authReducer = (state = null, action) => {
+  console.log(action.payload);
+  switch (action.type) {
+    case FETCH_USER:
+      return action.payload || false;
+    default:
+      return state;
   }
-}
+};
 
-export default authReducer
+export default authReducer;
